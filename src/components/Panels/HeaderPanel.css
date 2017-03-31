@@ -1,0 +1,157 @@
+.top-panel{
+    position:fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    z-index: 2;
+
+    background:#f9f9f9;
+    height: 64px;
+    box-shadow: 5px 0px 10px #888;
+    display: flex;
+    overflow: none;
+}
+.top-panel-space {
+    display: block;
+    width: 100%;
+    position: relative;
+    height: 80px;
+    z-index: 0;
+}
+
+h3 {
+    height: 64px;
+    line-height: 64px;
+    padding: 0px 30px;
+}
+
+.menu-tools  {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-top:0px;
+    width: 300px;
+}
+.menu-tools ul,
+.menu-tools ul li {
+    list-style : none;
+    margin: 0px;
+    padding:0px;
+}
+.menu-tools ul li button {
+    display:block;
+    float:left;
+    width: 25%;
+    font-size: 13px;
+    border-radius: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.menu-tools ul li button.btn-default:hover {
+    background: #fafafa;
+}
+.menu-tools ul li button i {
+    display: block;
+    font-size:30px;
+
+}
+
+.left-panel {
+    position:fixed;
+    top: 0;
+    padding-top: 10px;
+    left: 0px;
+    z-index: 1;
+    background:#f9f9f9;
+    height:100%;
+    box-shadow: 5px 0px 10px #ccc;
+    width: 300px;
+}
+.narrow .left-panel {
+    width: 160px;
+}
+.left-panel > a {
+    font-family: 'Basic';
+    display: block;
+    line-height: 40px;
+    padding: 0px 20px;
+    text-decoration: none;
+    font-size: 22px;
+}
+.left-panel > a:hover {
+    background: black;
+    color: white;
+    text-decoration: none;
+}
+.left-panel > a.active {
+    background: #0275d8;
+    color: white;
+    text-decoration: none;
+}
+
+
+.inner-area {
+    position:fixed;
+    top: 0px;
+    background: #ffffff;
+    padding: 20px;
+    left: 300px;
+    overflow-y: scroll;
+}
+.narrow .inner-area {
+    left: 160px;
+}
+.inner-area.no-padding {
+    padding: 0px;
+}
+/*
+
+
+
+.hdr-panel {
+    height: 45px;
+    line-height: 40px;
+
+    background: #f8f8f8;
+    border-bottom: 1px #aaa solid;
+    margin-bottom:20px;
+    position: fixed;
+    z-index: 5;
+}
+.hdr-filler {
+    height:45px;
+}
+
+.side-right {
+    float:right;
+    margin-right:5px;
+}
+.side-left {
+    display:block;
+    float:left;
+    margin-left:10px;
+    width: 50px;
+}
+
+.centered {
+    overflow: hidden;
+    text-align: left;
+    white-space: nowrap;
+    padding:0px 20px;
+}
+.centered h4 {
+    margin:0px;
+    line-height: 40px;
+    text-align: left;
+}
+
+
+.zoom-level-top {
+    text-align:center;
+    margin-top: 2px;
+}
+
+.zoom-level-top select {
+    display: inline-block;
+    margin-left: 5px;
+}
+*/
