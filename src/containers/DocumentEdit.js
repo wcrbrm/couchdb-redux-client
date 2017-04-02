@@ -7,24 +7,19 @@ import AceEditor from 'react-ace';
 import 'brace/mode/json';
 import 'brace/ext/searchbox';
 import 'brace/theme/github';
-import { fetchOne, saveOne, deleteOne } from '../../engine/ApiData';
-import { Logger } from './../../engine/Logger';
+import { Logger } from './../services/Logger';
+import { getRoot, CouchDB } from './../services/ApiRequest';
 
-const isReadonly = (docId) => {
-  // docId === '--Config' || docId === '--Views' ||
-  return docId.substring(0, 8) === '_design/';
-};
+const isReadonly = (docId) => { return false; };
+/* eslint-disable no-undef */
+const isCms = () => (window.COUCHDB_CMS);
+/* eslint-enable no-undef */
 
 class WebsiteDocumentEdit extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = { documentId: '', value: '', canBeSaved: false, errorMessage: '', currentDoc: {} };
-    this.onDelete = this.onDelete.bind(this);
-    this.onAddNewDoc = this.onAddNewDoc.bind(this);
-  }
+  state = { documentId: '', value: '', canBeSaved: false, errorMessage: '', currentDoc: {} };
 
-  loadDocument(docId = this.state.documentId) {
+  loadDocument = (docId = this.state.documentId) => {
     //const docId = this.state.documentId;
     Logger.of('DocumentEdit.loadDocument').info('docId=', docId);
     this.props.load(docId, () => {
@@ -54,7 +49,7 @@ class WebsiteDocumentEdit extends Component {
     }
   }
 
-  onChange(newValue) {
+  onChange = (newValue) => {
     const oldDocument = this.props.dbDocuments[this.state.documentId];
     let currentDoc = {};
     let errorMessage = '';
@@ -75,23 +70,23 @@ class WebsiteDocumentEdit extends Component {
     this.props.cleanError();
   }
 
-  onSave(e) {
-    this.props.save(this.state.documentId, this.state.currentDoc, this.loadDocument.bind(this));
+  onSave = (e) => {
+    this.props.save(this.state.documentId, this.state.currentDoc, this.loadDocument(this));
   }
 
-  onDelete() {
+  onDelete = () => {
     this.props.delete(this.state.currentDoc._id, this.state.currentDoc._rev);
   }
 
-  onAddNewDoc() {
+  onAddNewDoc = () => {
     this.props.addNewDoc();
   }
 
   render() {
+    console.log(this.props);
+
     const docId = this.state.documentId;
     if (!docId) return false;
-    const onChange = this.onChange.bind(this);
-    const onSave = this.onSave.bind(this);
     // const value = JSON.stringify(doc, null, 2);
     const nowGMT = (new Date()).toISOString(); //
     const currentDoc = this.state.currentDoc;
@@ -118,7 +113,7 @@ class WebsiteDocumentEdit extends Component {
           {this.props.editLoading.loading ? (
             <span>...</span>
           ) : (
-            <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={onSave}>
+            <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={this.onSave}>
               Save Document
             </button>
           )}
@@ -145,7 +140,7 @@ class WebsiteDocumentEdit extends Component {
         ) : (
           <div style={{ padding: '2px 0px' }}>
             <div style={{ float: 'right', textAlign: 'right' }}>
-              <a href={`/db/${docId}`} target='_blank' rel='noopener noreferrer'>API</a>
+              <a href={`${getRoot()}/${docId}`} target='_blank' rel='noopener noreferrer'>API</a>
             </div>
             {(!open) ? (
               <div>
@@ -180,7 +175,7 @@ class WebsiteDocumentEdit extends Component {
             <AceEditor
               mode='json'
               theme='github'
-              onChange={onChange}
+              onChange={this.onChange}
               value={this.state.value}
               style={{ width: '100%', height: '100%' }}
               wrapEnabled={true}
@@ -207,7 +202,7 @@ export default connect(
 
     save: (documentId, doc, cb) => {
       dispatch({ type: 'saveStarted' });
-      saveOne(`db/${documentId}`, doc, (data) => {
+      CouchDB.saveOne(documentId, doc).then((data) => {
         if (data.error || data.reason) {
           dispatch({ type: 'saveError', payload: data });
         } else {
@@ -219,7 +214,7 @@ export default connect(
 
     load: (documentId, cb) => {
       if (documentId) {
-        fetchOne(`db/${documentId}`, (data) => {
+        CouchDB.fetchOne(documentId).then((data) => {
           dispatch({ type: 'saveDbDocument', payload: [documentId, data] });
           if (typeof cb === 'function') cb(data);
         });
@@ -237,7 +232,7 @@ export default connect(
         return result;
       };
       const newDoc = { _id: docId() };
-      saveOne(`db/${newDoc._id}`, newDoc, (data) => {
+      CouchDB.saveOne(newDoc._id, newDoc).then((data) => {
         if (!data.error || !data.reason) {
           Logger.of('DocumentEdit.addNewDoc.Success').info('newDocId=', data.id);
           dispatch(push(`/documents/${data.id}`));
@@ -250,7 +245,7 @@ export default connect(
     delete: (documentId, documentRev) => {
       if (documentId) {
         dispatch({ type: 'DELETE_DOCUMENT' });
-        deleteOne(`db/${documentId}`, documentRev, (data) => {
+        CouchDB.deleteOne(documentId, documentRev).then((data) => {
           if (data.error || data.reason) {
             dispatch({ type: 'SET_DELETE_DOCUMENT_ERROR', payload: data });
           } else {

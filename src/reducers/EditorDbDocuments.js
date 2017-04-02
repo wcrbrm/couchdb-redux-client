@@ -1,4 +1,5 @@
 import { createReducer } from './../actions';
+import { Logger } from './../services/Logger';
 
 const initialState = {
 };

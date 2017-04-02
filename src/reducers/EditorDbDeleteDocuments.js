@@ -1,5 +1,5 @@
 import { createReducer } from './../actions';
-import { Logger } from './../engine/Logger';
+import { Logger } from './../services/Logger';
 
 const initialState = {
   loading: false,

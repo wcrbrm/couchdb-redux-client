@@ -1,6 +1,5 @@
 import { routerReducer } from 'react-router-redux';
 import editorLoadingReducer from './EditorLoadingReducer';
-import editorDbConfig from './EditorDbConfig';
 import editorDbDocuments from './EditorDbDocuments';
 import editorDbResultSets from './EditorDbResultSets';
 import editorDbResultMaps from './EditorDbResultMaps';
@@ -12,7 +11,6 @@ import editorDbDeleteDocuments from './EditorDbDeleteDocuments';
 export default {
   routing: routerReducer,
   editLoading: editorLoadingReducer,
-  dbConfig: editorDbConfig,
   dbDocuments: editorDbDocuments,
   dbResultSets: editorDbResultSets,
   dbResultMaps: editorDbResultMaps,

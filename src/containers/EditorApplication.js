@@ -7,12 +7,10 @@ import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-rou
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { responsiveStoreEnhancer, createResponsiveStoreEnhancer, createResponsiveStateReducer } from 'redux-responsive';
-import {} from '../actions';
 import reducers from '../reducers';
 import EditorContainer from './EditorContainer';
-import WebsiteDocumentEdit from './website/DocumentEdit';
-import WebsiteDocuments from './website/Documents';
-import WebsiteViews from './website/Views';
+import WebsiteDocumentEdit from './DocumentEdit';
+import WebsiteDocuments from './Documents';
 
 const envApplocation = (elem, __w, callback) => {
   const state = __w.__initialState__ || {};
@@ -39,7 +37,6 @@ const envApplocation = (elem, __w, callback) => {
           <IndexRedirect to='/documents' />
           <Route path='/documents/**' component={WebsiteDocumentEdit} />
           <Route path='/documents' component={WebsiteDocuments} />
-          <Route path='/dbdesign/views' component={WebsiteViews} />
         </Route>
       </Router>
     </Provider>

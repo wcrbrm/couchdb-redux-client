@@ -12,7 +12,7 @@ if (elemRootApplication) {
   const elemRootLoader = __d.getElementById('root_loader');
   envApplication(elemRootApplication, __w, () => {
     elemRootApplication.style.display = 'block';
-    elemRootLoader.style.display = 'none';
+    if (elemRootLoader) elemRootLoader.style.display = 'none';
   });
 } else {
   __b.innerText = '#root_application was not found';

@@ -8,8 +8,7 @@ import { EditorLayout } from '../components/EditorLayout';
 const mapStateToProps = (state) => {
   return {
     browser: state.browser,
-    pathname: state.routing.locationBeforeTransitions.pathname.substring(1),
-    editorMode: state.editorMode
+    pathname: state.routing.locationBeforeTransitions.pathname.substring(1)
   };
 };
 

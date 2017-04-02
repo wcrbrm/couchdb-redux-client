@@ -1,23 +1,20 @@
 {
-  "name": "cloud.enormous.bundle.cbehrmann",
+  "name": "couchdb-redux-client",
   "version": "1.0.0",
-  "description": "Enormous Cloud, C. Behrmanns Edition",
+  "description": "Alternative interface for editing couchdb document collections",
   "scripts": {
     "build": "npm run clean && webpack --config webpack.config.js",
     "clean": "rm -f dist/*.js || true",
     "test": "mocha --compilers js:babel-register --recursive",
-    "test:watch": "npm test -- --watch",
-    "prodcution": "npm run clean && webpack --config webpack.production.config.js",
-    "update": "cp -rf dist/*.js ../../cbehrmann/project-battle/resources/assets/battle/dist/"
+    "test:watch": "npm test -- --watch"
   },
-  "repository": "git@webcerebrium.com:cloud/enormous.bundle.cbehrmann",
+  "repository": "https://github.com/wcrbrm/couchdb-redux-client",
   "keywords": [
     "react",
     "reactjs",
-    "webpack",
-    "enormous.cloud"
+    "couchdb"
   ],
-  "author": "Ecnormous.Cloud",
+  "author": "Web Cerebrium <webcerebrium@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "autoprefixer": "*",
