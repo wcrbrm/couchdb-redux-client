@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import { push } from 'react-router-redux';
 import AceEditor from 'react-ace';
 import 'brace/mode/json';
@@ -69,12 +70,15 @@ class WebsiteNewDocument extends Component {
     const open = (currentDoc && currentDoc.status === 'published' && currentDoc.published < nowGMT);
     return (
       <div>
-        <div style={{ float: 'right', textAlign: 'right' }}>
-          <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={this.onCreateDoc}>
-            Create Document
-          </button>
+        <Link to='/documents' >All Documents</Link>
+        <div>
+          <div style={{ float: 'right', textAlign: 'right' }}>
+            <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={this.onCreateDoc}>
+              Create Document
+            </button>
+          </div>
+          <h1>New Document</h1>
         </div>
-        <h1>New Document</h1>
         { this.props.errorMessage &&
           <div
             className='alert alert-danger'

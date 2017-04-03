@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/json';
 import 'brace/ext/searchbox';
@@ -102,37 +101,40 @@ class WebsiteDocumentEdit extends Component {
     };
     return (
       <div>
-        <div style={{ float: 'right', textAlign: 'right' }}>
-          {this.props.editLoading.loading ? (
-            <span>...</span>
-          ) : (
-            <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={this.onSave}>
-              Save Document
-            </button>
-          )}
-          {
-            this.props.editorDbMessages.error &&
-            <div
-              className='alert alert-danger'
-              style={{ padding: '0px 20px', marginBottom: 5 }}
-            >
-              {this.props.editorDbMessages.error}
-            </div>
-          }
-          {
-            this.props.editLoading.error &&
-            <div
-              className='alert alert-danger'
-              style={{ padding: '0px 20px', marginBottom: 5 }}
-            >
-              {this.props.editLoading.error}
-            </div>
-          }
+        <Link to='/documents' >All Documents</Link>
+        <div>
+          <div style={{ float: 'right', textAlign: 'right' }}>
+            {this.props.editLoading.loading ? (
+              <span>...</span>
+            ) : (
+              <button className='btn btn-success' disabled={!this.state.canBeSaved} onClick={this.onSave}>
+                Save Document
+              </button>
+            )}
+            {
+              this.props.editorDbMessages.error &&
+              <div
+                className='alert alert-danger'
+                style={{ padding: '0px 20px', marginBottom: 5 }}
+              >
+                {this.props.editorDbMessages.error}
+              </div>
+            }
+            {
+              this.props.editLoading.error &&
+              <div
+                className='alert alert-danger'
+                style={{ padding: '0px 20px', marginBottom: 5 }}
+              >
+                {this.props.editLoading.error}
+              </div>
+            }
+          </div>
+          <Link to='/new-document' style={styleAddNewDocButton} className='btn btn-link' >
+            <i className='fa fa-plus' />+
+          </Link>
+          <h1>Edit Document</h1>
         </div>
-        <Link to='/new-document' style={styleAddNewDocButton} className='btn btn-link' >
-          <i className='fa fa-plus' />+
-        </Link>
-        <h1>Edit Document</h1>
         {(this.state.errorMessage) ? (
           <div
             className='alert alert-danger'
