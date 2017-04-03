@@ -49,21 +49,22 @@ const getPayloadParams = object => ({
 export const ApiRequest = {
   fetchOne: (url) => {
     const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
-    const req = new Request(u, { method: 'get', mode: 'cors', headers: getRequestHeaders() });
+    const req = new Request(u, { method: 'GET', mode: 'cors', headers: getRequestHeaders() });
     return fetchRequest(req);
   },
-  createOne: (object) => {
-    const reqParams = Object.assign({ method: 'POST' }, getPayloadParams(object));
-    return fetchRequest(new Request(`${getRoot()}`, reqParams));
+  createOne: (url, object) => {
+    const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
+    const reqParams = Object.assign({ method: 'PUT' }, getPayloadParams(object));
+    return fetchRequest(new Request(u, reqParams));
   },
   saveOne: (url, object) => {
     const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
     const reqParams = Object.assign({ method: 'PUT' }, getPayloadParams(object));
     return fetchRequest(new Request(u, reqParams));
   },
-  removeOne: (url, object) => {
+  removeOne: (url) => {
     const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
-    const reqParams = Object.assign({ method: 'PUT' }, getPayloadParams(Object.assign({ _deleted: true }, object)));
+    const reqParams = Object.assign({ method: 'DELETE', mode: 'cors', headers: getRequestHeaders() });
     return fetchRequest(new Request(u, reqParams));
   }
 };
@@ -72,7 +73,7 @@ export const CRUD = methods => (
   Object.assign({}, {
     fetchOne: ApiRequest.fetchOne,
     saveOne: ApiRequest.saveOne,
-    createOne: object => (ApiRequest.createOne(Object.assign({}, object, { type }))),
+    createOne: ApiRequest.createOne,
     removeOne: ApiRequest.removeOne
   }, methods || {})
 );

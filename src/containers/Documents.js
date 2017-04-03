@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { Logger } from './../services/Logger';
 import { CouchDB } from './../services/ApiRequest';
 
@@ -42,37 +41,33 @@ class WebsiteDocuments extends Component {
     if (bottomPosition(this.scrollingArea) < 200) {
       if (this.canLoadMore()) this.onLoadMore();
     }
-  }
+  };
 
   onSearch = (event) => {
     this.setState({ search: event.target.value });
-  }
+  };
 
   getAllItems = () => {
     const rows = this.props.alldocs;
     if (!rows) return 0;
     const searchValue = this.state.search.toLowerCase();
     return rows.filter(obj => (!searchValue || obj.id.toLowerCase().indexOf(searchValue) === 0));
-  }
+  };
 
   canLoadMore = () => {
     return (this.state.limit < this.getAllItems().length);
-  }
+  };
 
   onLoadMore = () => {
     let newLimit = this.state.limit + 100;
     const items = this.getAllItems();
     if (newLimit > items.length) newLimit = items.length;
     this.setState({ limit: newLimit });
-  }
-
-  onAddNewDoc = () => {
-    this.props.addNewDoc();
-  }
+  };
 
   cleanAllMessages = () => {
     this.props.cleanMessages();
-  }
+  };
 
   render() {
     const items = this.getAllItems();
@@ -81,9 +76,9 @@ class WebsiteDocuments extends Component {
     return (
       <div ref={el => (this.scrollingArea = el ? el.parentNode : null)}>
         <div style={{ float: 'right', display: 'flex' }}>
-          <button className='btn btn-success' onClick={this.onAddNewDoc} style={{ marginRight: '1em' }} >
+          <Link to='/new-document' className='btn btn-success' style={{ marginRight: '1em' }} >
             Add new document
-          </button>
+          </Link>
           <input
             ref={el => (this.inputSearch = el)}
             type='text' className='form-control' name='search'
@@ -141,49 +136,21 @@ class WebsiteDocuments extends Component {
 }
 
 const mapStateToProps = state => ({
-  dbResultSets: state.dbResultSets,
-  alldocs: state.dbResultSets.all_docs ? state.dbResultSets.all_docs.rows : [],
-  messages: {
-    error: state.dbNewDocuments.error && state.dbNewDocuments.error, // <-- MESS!
-    success: state.dbDeleteDocuments.success && state.dbDeleteDocuments.success // <-- MESS!
-  }
+  alldocs: state.editorDbResults.all_docs ? state.editorDbResults.all_docs.rows : [],
+  messages: state.editorDbMessages && state.editorDbMessages
 });
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    load: () => {
+      CouchDB.fetchAllDocs().then((data) => {
+        Logger.of('Document.load').info('data=', data);
+        dispatch({ type: 'DB_RESULT_SET', payload: ['all_docs', data] });
+      });
+    },
+    cleanMessages: () => {
+      dispatch({ type: 'CLEAN_ALL_MESSAGES' });
+    }
+  };
+};
 
-const mapDispatchToProps = dispatch => ({
-  load: () => {
-    CouchDB.fetchAllDocs().then((data) => {
-      Logger.of('Document.load').info('data=', data);
-      dispatch({ type: 'saveDbResultSets', payload: ['all_docs', data] });
-    });
-  },
-  addNewDoc: () => {
-    dispatch({ type: 'ADD_DOCUMENT' });
-    const docId = () => {
-      let result = '';
-      const possible = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      for (let i = 0; i < 32; i += 1) {
-        result += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
-      return result;
-    };
-    const newDoc = { _id: docId() };
-    CouchDB.saveOne(newDoc._id, newDoc).then((data) => {
-      if (!data.error || !data.reason) {
-        Logger.of('Documents.addNewDoc.Success').info('newDocId=', data.id);
-        dispatch(push(`/documents/${newDoc._id}`));
-      } else {
-        dispatch({ type: 'SET_DOCUMENT_ERROR', payload: data });
-      }
-    });
-  },
-  cleanMessages: () => {
-    Logger.of('Documents.cleanError').info('Clean All Errors');
-    dispatch({ type: 'SET_DOCUMENT_ERROR', payload: '' });
-    // dispatch({ type: 'SET_DELETE_DOCUMENT_SUCCESS', payload: '' }); ??
-  }
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(WebsiteDocuments);
+export default connect(mapStateToProps, mapDispatchToProps)(WebsiteDocuments);

@@ -31,7 +31,7 @@ class WebsiteDocumentEdit extends Component {
         canBeSaved: false
       });
     });
-  }
+  };
 
   componentDidMount() {
     const docId = this.props.routeParams.splat;
@@ -68,27 +68,20 @@ class WebsiteDocumentEdit extends Component {
       canBeSaved
     });
     this.props.cleanError();
-  }
+  };
 
   onSave = (e) => {
     this.props.save(this.state.documentId, this.state.currentDoc, this.loadDocument(this));
-  }
+  };
 
-  onDelete = () => {
-    this.props.delete(this.state.currentDoc._id, this.state.currentDoc._rev);
-  }
-
-  onAddNewDoc = () => {
-    this.props.addNewDoc();
-  }
+  onDeleteDocument = () => {
+    this.props.onDeleteDocument(this.state.currentDoc._id, this.state.currentDoc._rev);
+  };
 
   render() {
-    console.log(this.props);
-
     const docId = this.state.documentId;
     if (!docId) return false;
-    // const value = JSON.stringify(doc, null, 2);
-    const nowGMT = (new Date()).toISOString(); //
+    const nowGMT = (new Date()).toISOString();
     const currentDoc = this.state.currentDoc;
     if (!currentDoc) return false;
     const open = (currentDoc && currentDoc.status === 'published' && currentDoc.published < nowGMT);
@@ -117,18 +110,28 @@ class WebsiteDocumentEdit extends Component {
               Save Document
             </button>
           )}
-          {(this.props.editLoading.error) ? (
+          {
+            this.props.editorDbMessages.error &&
+            <div
+              className='alert alert-danger'
+              style={{ padding: '0px 20px', marginBottom: 5 }}
+            >
+              {this.props.editorDbMessages.error}
+            </div>
+          }
+          {
+            this.props.editLoading.error &&
             <div
               className='alert alert-danger'
               style={{ padding: '0px 20px', marginBottom: 5 }}
             >
               {this.props.editLoading.error}
             </div>
-          ) : false}
+          }
         </div>
-        <button style={styleAddNewDocButton} className='btn btn-link' onClick={this.onAddNewDoc} >
-          <i className='fa fa-plus' />
-        </button>
+        <Link to='/new-document' style={styleAddNewDocButton} className='btn btn-link' >
+          <i className='fa fa-plus' />+
+        </Link>
         <h1>Edit Document</h1>
         {(this.state.errorMessage) ? (
           <div
@@ -144,7 +147,7 @@ class WebsiteDocumentEdit extends Component {
             </div>
             {(!open) ? (
               <div>
-                <i className='fa fa-lock' title={'Document is not publicly visible'}></i>
+                <i className='fa fa-lock' title={'Document is not publicly visible'} />
                 &nbsp;
                 <strong>{docId}</strong>
                 &nbsp; &nbsp;
@@ -155,7 +158,7 @@ class WebsiteDocumentEdit extends Component {
               </div>
             ) : (
               <div>
-                <i className='fa fa-eye' title={'Public Document'}></i>
+                <i className='fa fa-eye' title={'Public Document'} />
                 &nbsp;
                 <a target='_blank' rel='noopener noreferrer' href={`/${currentDoc._id}`}>View Published</a>
               </div>
@@ -184,18 +187,16 @@ class WebsiteDocumentEdit extends Component {
             />
           </div>
         )}
-        <button className='btn btn-danger' style={{ float: 'left', marginTop: '1em' }} onClick={this.onDelete}>
+        <button className='btn btn-danger' style={{ margin: '1em' }} onClick={this.onDeleteDocument}>
           Delete Document
         </button>
       </div>
     );
   }
 }
-
-export default connect(
-  state => (state),
-  dispatch => ({
-
+const mapStateToProps = state => (state);
+const mapDispatchToProps = (dispatch, props) => {
+  return {
     cleanError: () => {
       dispatch({ type: 'saveError', payload: '' });
     },
@@ -221,40 +222,25 @@ export default connect(
       }
     },
 
-    addNewDoc: () => {
-      dispatch({ type: 'ADD_DOCUMENT' });
-      const docId = () => {
-        let result = '';
-        const possible = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 32; i += 1) {
-          result += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return result;
-      };
-      const newDoc = { _id: docId() };
-      CouchDB.saveOne(newDoc._id, newDoc).then((data) => {
-        if (!data.error || !data.reason) {
-          Logger.of('DocumentEdit.addNewDoc.Success').info('newDocId=', data.id);
-          dispatch(push(`/documents/${data.id}`));
-        } else {
-          dispatch({ type: 'SET_DOCUMENT_ERROR', payload: data });
-        }
-      });
-    },
-
-    delete: (documentId, documentRev) => {
+    onDeleteDocument: (documentId, documentRev) => {
       if (documentId) {
-        dispatch({ type: 'DELETE_DOCUMENT' });
-        CouchDB.deleteOne(documentId, documentRev).then((data) => {
-          if (data.error || data.reason) {
-            dispatch({ type: 'SET_DELETE_DOCUMENT_ERROR', payload: data });
+        dispatch({ type: 'WAIT_STARTED' });
+        const url = `${documentId}?rev=${documentRev}`;
+        CouchDB.removeOne(url).then((data) => {
+          if (data.errors) {
+            dispatch({ type: 'WAIT_FINISHED' });
+            dispatch({ type: 'SET_ERROR_MESSAGES', payload: data.errors.message });
           } else {
             Logger.of('DocumentsEdit.delete').info('data=', data);
-            dispatch({ type: 'SET_DELETE_DOCUMENT_SUCCESS', payload: data });
+            dispatch({ type: 'WAIT_FINISHED' });
+            dispatch({ type: 'SET_ERROR_MESSAGES', payload: '' });
+            dispatch({ type: 'SET_SUCCESS_MESSAGES', payload: 'Your document has been successfully deleted.' });
             dispatch(push('/documents'));
           }
         });
       }
     }
-  })
-)(WebsiteDocumentEdit);
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WebsiteDocumentEdit);

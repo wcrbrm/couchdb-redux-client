@@ -8,9 +8,7 @@ import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { responsiveStoreEnhancer, createResponsiveStoreEnhancer, createResponsiveStateReducer } from 'redux-responsive';
 import reducers from '../reducers';
-import EditorContainer from './EditorContainer';
-import WebsiteDocumentEdit from './DocumentEdit';
-import WebsiteDocuments from './Documents';
+import { EditorContainer, WebsiteDocumentEdit, WebsiteDocuments, WebsiteNewDocument } from './';
 
 const envApplocation = (elem, __w, callback) => {
   const state = __w.__initialState__ || {};
@@ -37,6 +35,7 @@ const envApplocation = (elem, __w, callback) => {
           <IndexRedirect to='/documents' />
           <Route path='/documents/**' component={WebsiteDocumentEdit} />
           <Route path='/documents' component={WebsiteDocuments} />
+          <Route path='/new-document' component={WebsiteNewDocument} />
         </Route>
       </Router>
     </Provider>
