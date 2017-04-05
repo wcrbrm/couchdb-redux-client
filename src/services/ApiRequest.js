@@ -41,6 +41,7 @@ const getRequestHeaders = () => {
 
 const getPayloadParams = object => ({
   mode: 'cors',
+  credentials: 'include',
   redirect: 'follow',
   headers: getRequestHeaders(),
   body: JSON.stringify(object)
@@ -49,7 +50,7 @@ const getPayloadParams = object => ({
 export const ApiRequest = {
   fetchOne: (url) => {
     const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
-    const req = new Request(u, { method: 'GET', mode: 'cors', headers: getRequestHeaders() });
+    const req = new Request(u, { method: 'GET', mode: 'cors', credentials: 'include', headers: getRequestHeaders() });
     return fetchRequest(req);
   },
   createOne: (url, object) => {
@@ -58,6 +59,7 @@ export const ApiRequest = {
     return fetchRequest(new Request(u, reqParams));
   },
   saveOne: (url, object) => {
+    Logger.of('ApiRequest.saveOne').info('url=', url, 'object=', object);
     const u = url.indexOf(':') !== -1 ? url : `${getRoot()}/${url}`;
     const reqParams = Object.assign({ method: 'PUT' }, getPayloadParams(object));
     return fetchRequest(new Request(u, reqParams));

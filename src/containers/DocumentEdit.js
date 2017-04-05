@@ -67,15 +67,17 @@ class WebsiteDocumentEdit extends Component {
       canBeSaved
     });
     this.props.cleanError();
-  };
+  }
 
   onSave = (e) => {
-    this.props.save(this.state.documentId, this.state.currentDoc, this.loadDocument(this));
-  };
+    this.props.save(this.state.documentId, this.state.currentDoc, () => {
+      this.loadDocument(this.state.documentId);
+    });
+  }
 
   onDeleteDocument = () => {
     this.props.onDeleteDocument(this.state.currentDoc._id, this.state.currentDoc._rev);
-  };
+  }
 
   render() {
     const docId = this.state.documentId;
@@ -131,7 +133,7 @@ class WebsiteDocumentEdit extends Component {
             }
           </div>
           <Link to='/new-document' style={styleAddNewDocButton} className='btn btn-link' >
-            <i className='fa fa-plus' />+
+            <i className='fa fa-plus' />
           </Link>
           <h1>Edit Document</h1>
         </div>
